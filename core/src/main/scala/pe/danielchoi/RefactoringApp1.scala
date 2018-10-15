@@ -1,6 +1,6 @@
-package fpmax
+package pe.danielchoi
 
-import scala.utils.Try
+import scala.util.Try
 import scala.io.StdIn.readLine
 
 object App2 {
@@ -16,11 +16,11 @@ object App2 {
     def point[A](a: => A): IO[A] = IO(() => a)
   }
 
-  def putStrLn(line: String): IO[Unit] = IO(() => println(lin))
+  def putStrLn(line: String): IO[Unit] = IO(() => println(line))
   def getStrLn(): IO[String] = IO(() => readLine())
-  def nextInt(upper: Int): IO[Int] = IO(() => scala.util.Random.nexInt(5))
+  def nextInt(upper: Int): IO[Int] = IO(() => scala.util.Random.nextInt(5))
 
-  def checkContinue(name): IO[Boolean] =
+  def checkContinue(name: String): IO[Boolean] =
     for {
       _ <- putStrLn("Do you want to continue, ${name}?")
       input <- getStrLn.map(_.toLowerCase)
@@ -33,7 +33,7 @@ object App2 {
 
   def gameLoop(name: String): IO[Unit] =
     for {
-      num <- nexInt(5).map(_ + 1)
+      num <- nextInt(5).map(_ + 1)
       _ <- putStrLn(s"Dear ${name}, please guess a number from 1 to 5:")
       input <- getStrLn
       _ <- parseInt(input).fold(
@@ -42,15 +42,15 @@ object App2 {
             if(guess == num) putStrLn("You guessed right, ${name}!")
             else putStrLn("You guessed wrong, ${name}! The number was: ${num}")
           )
-      cont <- checkContinue(name)
+      count <- checkContinue(name)
       _ <- if (count) gameLoop(name) else IO.point(())
     } yield ()
 
   def main: IO[Unit] =
     for {
       _ <- putStrLn("What is your name?")
-      name <- getStrLn(s"Hello, ${name}, welcome to the game!")
-      _ <- putStrLn
+      name <- getStrLn()
+      _ <- putStrLn(s"Hello, ${name}, welcome to the game!")
       _ <- gameLoop(name)
     } yield ()
 }

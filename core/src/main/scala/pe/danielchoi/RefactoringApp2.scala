@@ -1,9 +1,9 @@
-package fpmax
+package pe.danielchoi
 
 /*
  *  Monad + Test with State Monad for IO
  */
-import scala.utils.Try
+import scala.util.Try
 import scala.io.StdIn.readLine
 
 object App2 {
@@ -44,7 +44,7 @@ object App2 {
     def apply[F[_]](implicit F: Random[F]): Random[F] = F
   }
 
-  def nextInt(upper: Int): F[Int] = Random[F].nextInt(upper)
+  def nextInt[F[_]: Random](upper: Int): F[Int] = Random[F].nextInt(upper)
   def putStrLn[F[_]: Console](line: String): F[Unit] = Console[F].putStrLn(line)
   def getStrLn[F[_]: Console](): F[String] = Console[F].getStrLn
 
@@ -67,20 +67,20 @@ object App2 {
     }
 
     implicit val ConsoleIO = new Console[IO] {
-      def putStrLn(line: String): IO[Unit] = IO(() => println(lin))
+      def putStrLn(line: String): IO[Unit] = IO(() => println(line))
       def getStrLn(): IO[String] = IO(() => readLine())
     }
 
     implicit val RandomIO = new Random[IO] {
-      def nextInt(upper: Int): IO[Int] = IO(() => scala.util.nextInt(upper))
+      def nextInt(upper: Int): IO[Int] = IO(() => scala.util.Random.nextInt(upper))
     }
   }
 
-  def checkContinue[F[_]: Program: Console](name): F[Boolean] =
+  def checkContinue[F[_]: Program: Console](name: String): F[Boolean] =
     for {
       _ <- putStrLn("Do you want to continue, ${name}?")
       input <- getStrLn.map(_.toLowerCase)
-      cont <- input match {
+      count <- input match {
                 case "y" => finish(true)
                 case "n" => finish(false)
                 case _ => checkContinue(name)
@@ -98,15 +98,15 @@ object App2 {
             if (guess == num) putStrLn("You guessed right, ${name}!")
             else putStrLn("You guessed wrong, ${name}! The number was: ${num}")
           )
-      cont <- checkContinue(name)
+      count <- checkContinue(name)
       _ <- if (count) gameLoop(name) else finish(())
     } yield ()
 
   def main[F[_]: Program: Random: Console]: F[Unit] =
     for {
       _ <- putStrLn("What is your name?")
-      name <- getStrLn(s"Hello, ${name}, welcome to the game!")
-      _ <- putStrLn
+      name <- getStrLn()
+      _ <- putStrLn(s"Hello, ${name}, welcome to the game!")
       _ <- gameLoop(name)
     } yield ()
 

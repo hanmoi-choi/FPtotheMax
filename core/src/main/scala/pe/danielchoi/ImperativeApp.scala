@@ -1,6 +1,6 @@
-package fpmax
+package pe.danielchoi
 
-import scala.utils.Try
+import scala.util.Try
 import scala.io.StdIn.readLine
 
 object App1 {
@@ -14,7 +14,7 @@ object App1 {
     var exec = true
 
     while(exec) {
-      val num = scala.util.Random.nexInt(5) + 1
+      val num = scala.util.Random.nextInt(5) + 1
 
       println(s"Dear ${name}, please guess a number from 1 to 5:")
 
